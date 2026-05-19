@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiblioGestión | Escaneo NFC</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="page-shell">
+
+    <header class="topbar">
+      <a href="{{ url_for('index')}}" class="brand-wrap">
+        <div class="brand-logo">
+        <img
+          src={{ url_for('static', filename='images/logo.png')}}
+          alt="BiblioGestión"
+          >
+        </div>
+        <div class="brand-copy">
+          <div class="brand-title">Sistema de Gestión de Bibliotecas</div>
+          <div class="brand-subtitle">Estación de escaneo</div>
+        </div>
+      </a>
+    </header>
+
+    <main class="main-content">
+      <section class="scanner-panel nfc-panel">
+
+        <div class="nfc-state-icon" id="nfcIcon">◉</div>
+
+        <h1 id="estadoTexto">Listo para escanear</h1>
+
+        <p id="detalleTexto">
+          Acerque la etiqueta NFC al lector.
+        </p>
+
+        <div class="loader hidden" id="loader"></div>
+
+        <div class="nfc-actions">
+          <button class="search-button" id="btnEscanear">
+            Iniciar escaneo
+          </button>
+
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <script>
+    const btnEscanear = document.getElementById("btnEscanear");
+    const estadoTexto = document.getElementById("estadoTexto");
+    const detalleTexto = document.getElementById("detalleTexto");
+    const loader = document.getElementById("loader");
+    const nfcIcon = document.getElementById("nfcIcon");
+
+    async function iniciarEscaneo() {
+      btnEscanear.disabled = true;
+      btnEscanear.textContent = "Escaneando...";
+
+      estadoTexto.textContent = "Escaneando...";
+      detalleTexto.textContent = "Mantenga la etiqueta cerca del lector.";
+      loader.classList.remove("hidden");
+      nfcIcon.classList.add("scanning");
+
+      try {
+        const response = await fetch("{{ url_for('nfc_leer') }}");
+        const data = await response.json();
+
+        if (data.ok) {
+          estadoTexto.textContent = "Etiqueta detectada";
+          detalleTexto.textContent = "UID: " + data.uid + ". Redirigiendo al sistema...";
+          loader.classList.add("hidden");
+
+          setTimeout(() => {
+            window.location.href = data.url;
+          }, 900);
+        } else {
+          estadoTexto.textContent = "No se detectó ninguna etiqueta";
+          detalleTexto.textContent = data.mensaje || "Probá acercando nuevamente la etiqueta NFC.";
+          loader.classList.add("hidden");
+          nfcIcon.classList.remove("scanning");
+
+          btnEscanear.disabled = false;
+          btnEscanear.textContent = "Intentar de nuevo";
+        }
+
+      } catch (error) {
+        estadoTexto.textContent = "Error de escaneo";
+        detalleTexto.textContent = "No se pudo comunicar con el lector NFC.";
+        loader.classList.add("hidden");
+        nfcIcon.classList.remove("scanning");
+
+        btnEscanear.disabled = false;
+        btnEscanear.textContent = "Intentar de nuevo";
+      }
+    }
+
+    btnEscanear.addEventListener("click", iniciarEscaneo);
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>BiblioGestión | Escaneo con cámara</title>
+  <link rel="icon" href="/static/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="page-shell">
+
+    <header class="topbar">
+      <a href="{{ url_for('index')}}" class="brand-wrap">
+        <div class="brand-logo">
+        <img
+          src={{ url_for('static', filename='images/logo.png')}}
+          alt="BiblioGestión"
+          >
+        </div>
+        <div class="brand-copy">
+          <div class="brand-title">Sistema de Gestión de Bibliotecas</div>
+          <div class="brand-subtitle">Escaneo con cámara</div>
+        </div>
+      </a>
+    </header>
+
+    <main class="main-content">
+      <section class="scanner-panel camera-panel">
+
+        <h1 id="estadoTexto">Listo para escanear</h1>
+
+        <p id="detalleTexto">
+          Apunte la cámara al código de barras, ISBN o QR.
+        </p>
+
+        <div class="camera-preview">
+          <img src="{{ url_for('camera_feed') }}" id="cameraFeed">
+        </div>
+
+        <div class="nfc-actions">
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <script>
+    const estadoTexto = document.getElementById("estadoTexto");
+    const detalleTexto = document.getElementById("detalleTexto");
+
+    estadoTexto.textContent = "Escaneando...";
+    detalleTexto.textContent = "Mantenga el código visible frente a la cámara.";
+
+    async function revisarCodigo() {
+      try {
+        const response = await fetch("{{ url_for('camera_status') }}");
+        const data = await response.json();
+
+        if (data.detectado) {
+          estadoTexto.textContent = "Código detectado";
+          detalleTexto.textContent = "Código: " + data.codigo + ". Redirigiendo...";
+
+          setTimeout(() => {
+            window.location.href = data.url;
+          }, 800);
+        } else {
+          setTimeout(revisarCodigo, 700);
+        }
+
+      } catch (error) {
+        estadoTexto.textContent = "Error de cámara";
+        detalleTexto.textContent = "No se pudo leer el estado del escáner.";
+      }
+    }
+
+    revisarCodigo();
+  </script>
+
+</body>
+</html>

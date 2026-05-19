@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Gestión de Bibliotecas | Estación de Escaneo</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+</head>
+<body>
+  <div class="page-shell">
+
+    <header class="topbar">
+      <a href="{{ url_for('index')}}" class="brand-wrap">
+        <div class="brand-logo">
+        <img
+          src={{ url_for('static', filename='images/logo.png')}}
+          alt="BiblioGestión"
+          >
+        </div>
+        <div class="brand-copy">
+          <div class="brand-title">Sistema de Gestión de Bibliotecas</div>
+          <div class="brand-subtitle">Estación de escaneo</div>
+        </div>
+      </a>
+    </header>
+
+    <main class="main-content">
+      <section class="scanner-panel">
+
+        <form action="{{ url_for('buscar') }}" method="get" class="search-block">
+          <label for="q" class="search-label">Búsqueda manual</label>
+
+          <div class="search-row">
+            <input
+              id="q"
+              name="q"
+              type="text"
+              class="search-input"
+              placeholder="Buscar por título, ISBN, autor o código de barras..."
+            >
+            <button type="submit" class="search-button">Buscar</button>
+          </div>
+        </form>
+
+        <div class="buttons-grid">
+          <a href="{{ url_for('nfc_page') }}" class="scan-card nfc-card">
+            <div class="scan-icon">◉</div>
+            <div class="scan-title">Escaneo NFC</div>
+            <div class="scan-text">
+              Leer una etiqueta NFC y abrir el ítem correspondiente.
+            </div>
+          </a>
+
+          <a href="{{ url_for('camera_scan') }}" class="scan-card camera-card">
+            <div class="scan-icon">⌁</div>
+            <div class="scan-title">Escaneo con cámara</div>
+            <div class="scan-text">
+              Usar la cámara para leer ISBN, código de barras o QR.
+            </div>
+          </a>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+</body>
+</html>

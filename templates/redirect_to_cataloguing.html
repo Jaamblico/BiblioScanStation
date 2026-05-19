@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirigiendo...</title>
+</head>
+<body>
+
+<script>
+
+localStorage.setItem(
+  "pending_isbn",
+  "{{ isbn }}"
+);
+
+window.location.href = "{{ target }}";
+
+</script>
+
+</body>
+</html>
