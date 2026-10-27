@@ -59,8 +59,12 @@
     const detalleTexto = document.getElementById("detalleTexto");
     const loader = document.getElementById("loader");
     const nfcIcon = document.getElementById("nfcIcon");
+    let escaneoEnCurso = false;
 
     async function iniciarEscaneo() {
+      if (escaneoEnCurso) return;
+
+      escaneoEnCurso = true;
       btnEscanear.disabled = true;
       btnEscanear.textContent = "Escaneando...";
 
@@ -87,6 +91,7 @@
           loader.classList.add("hidden");
           nfcIcon.classList.remove("scanning");
 
+          escaneoEnCurso = false;
           btnEscanear.disabled = false;
           btnEscanear.textContent = "Intentar de nuevo";
         }
@@ -97,12 +102,14 @@
         loader.classList.add("hidden");
         nfcIcon.classList.remove("scanning");
 
+        escaneoEnCurso = false;
         btnEscanear.disabled = false;
         btnEscanear.textContent = "Intentar de nuevo";
       }
     }
 
     btnEscanear.addEventListener("click", iniciarEscaneo);
+    window.addEventListener("DOMContentLoaded", iniciarEscaneo, { once: true });
   </script>
 </body>
 </html>
